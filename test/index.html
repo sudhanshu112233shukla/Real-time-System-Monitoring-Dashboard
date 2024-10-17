@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Monitoring Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .chart-container { width: 80%; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <h1>System Monitoring Dashboard</h1>
+    <div class="chart-container">
+        <canvas id="cpuChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="memoryChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="networkChart"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function updateCharts() {
+            fetch('fetch_metrics.php')
+                .then(response => response.json())
+                .then(data => {
+                    const cpuCtx = document.getElementById('cpuChart').getContext('2d');
+                    const memoryCtx = document.getElementById('memoryChart').getContext('2d');
+                    const networkCtx = document.getElementById('networkChart').getContext('2d');
+
+                    new Chart(cpuCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['CPU Usage'],
+                            datasets: [{
+                                label: 'CPU',
+                                data: [data.cpu_usage],
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 2
+                            }]
+                        }
+                    });
+
+                    new Chart(memoryCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Memory Usage'],
+                            datasets: [{
+                                label: 'Memory',
+                                data: [data.memory_usage],
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 2
+                            }]
+                        }
+                    });
+
+                    new Chart(networkCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Network Bandwidth'],
+                            datasets: [{
+                                label: 'Network',
+                                data: [data.network_bandwidth],
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 2
+                            }]
+                        }
+                    });
+                });
+        }
+
+        setInterval(updateCharts, 5000); // Update every 5 seconds
+    </script>
+</body>
+</html>
